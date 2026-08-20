@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="SF Isometric — downtown San Francisco redrawn as an isometric map, tile by tile.">
+  <title>SF Isometric</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="wordmark" href="#top">SF Isometric</a>
+    <a class="chip social" href="https://x.com/justinchavez" target="_blank" rel="noreferrer">@justinchavez</a>
+  </header>
+
+  <main id="top">
+    <section class="intro">
+      <h1>Downtown San Francisco, redrawn as an isometric pixel map.</h1>
+      <p class="lede">A fine-tuned image model redraws every block of the city as pixel art — tile by tile, then stitched into one continuous map.</p>
+    </section>
+
+    <section class="map-section" aria-label="Interactive map">
+      <div class="map-topline">
+        <p class="section-label">The map</p>
+      </div>
+
+      <nav class="place-nav" aria-label="Jump to a place">
+        <button type="button" class="place-button is-active" data-map-action="fit" aria-pressed="true">Overview</button>
+        <button type="button" class="place-button" data-map-landmark="coit" aria-pressed="false">Coit Tower</button>
+        <button type="button" class="place-button" data-map-landmark="washington" aria-pressed="false">Washington Square</button>
+      </nav>
+
+      <div class="map-canvas">
+        <div id="map-viewport" class="map-viewport" role="application" aria-label="Interactive map of downtown San Francisco. Drag to pan, scroll to zoom, click a quadrant to inspect it.">
+          <div id="map-stage" class="map-stage"></div>
+
+          <button class="map-marker" type="button" data-map-landmark="coit" data-map-x="5376" data-map-y="2304" aria-label="Zoom to Coit Tower">
+            <span>Coit Tower</span><i></i>
+          </button>
+          <button class="map-marker" type="button" data-map-landmark="washington" data-map-x="3328" data-map-y="2816" aria-label="Zoom to Washington Square">
+            <span>Washington Square</span><i></i>
+          </button>
+
+          <div class="map-controls" aria-label="Zoom controls">
+            <button type="button" data-map-action="out" aria-label="Zoom out">−</button>
+            <button type="button" data-map-action="in" aria-label="Zoom in">+</button>
+          </div>
+        </div>
+      </div>
+
+      <p class="map-hint">Drag to pan · scroll to zoom · click to inspect</p>
+    </section>
+
+    <section class="strategy" aria-label="Strategy">
+      <article>
+        <p class="section-label">Now</p>
+        <div>
+          <h2>One working slice</h2>
+          <p>80 tiles generated so far, stitched into one interactive mosaic with Coit Tower and Washington Square marked.</p>
+        </div>
+      </article>
+
+      <article>
+        <p class="section-label">The model</p>
+        <div>
+          <h2>Fine-tuned on Qwen Image Edit</h2>
+          <p>The current map was generated with Qwen-Image-Edit-2511 — a ~20B image-editing model — fine-tuned as a LoRA on about 250 render-to-pixel-art pairs (50 city views × 5 training variants) at 1024 px, trained to ~2,750 steps. Every tile is then generated with that LoRA attached.</p>
+        </div>
+      </article>
+
+      <article>
+        <p class="section-label">Experiments</p>
+        <div>
+          <h2>Cheaper generation</h2>
+          <p>Today a tile takes 25 steps for full quality. Fewer steps are cheaper but quality drops. The goal is a Turbo/Lightning LoRA or Krea 2 style transfer that keeps quality at the low step count.</p>
+        </div>
+      </article>
+
+      <article>
+        <p class="section-label">The map</p>
+        <div>
+          <h2>A Coenen-style San Francisco</h2>
+          <p>A city-wide map in the same spirit as <a href="https://isometric.nyc/" target="_blank" rel="noreferrer">Andy Coenen’s Isometric NYC</a> — whose <a href="https://x.com/_coenen/status/2014359718697799989" target="_blank" rel="noreferrer">launch post</a> drew 7,800+ likes. Full SF is about 14,400 tiles: 12 km × 12 km at 100 m pitch is 120 × 120.</p>
+        </div>
+      </article>
+
+      <article>
+        <p class="section-label">If cost drops</p>
+        <div>
+          <h2>The entire Bay Area</h2>
+          <p>If faster few-step generation brings the cost per tile down far enough, attempt the whole Bay Area at the scale suggested by <a href="https://www.reddit.com/r/interestingasfuck/comments/1p6v65l/sf_bay_seen_from_400_mi_away_worldview3_satellite/" target="_blank" rel="noreferrer">this satellite view</a>.</p>
+        </div>
+      </article>
+
+      <article>
+        <p class="section-label">Deliverables</p>
+        <div>
+          <h2>What ships</h2>
+          <p>This public demo, the 50 m zoom experiment, step and GPU comparison pages, and eventually the full-SF map — each run labeled with its tile count, steps, and GPU.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="strategy" aria-label="Why me">
+      <article>
+        <p class="section-label">Why me?</p>
+        <div>
+          <h2>I've built SF maps before</h2>
+          <p>In 2024 I shipped <a href="https://x.com/jus10chavez/status/1776285549067919564" target="_blank" rel="noreferrer">SF Park Game</a> — a playable map of 250+ San Francisco parks built from DataSF and OpenStreetMap data — and open-sourced the code. 10+ years in machine learning, focused on local model fine-tuning. I was the first SF hire at Inkeep (YC W23), deploying AI agents for companies like Anthropic and Postman.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <dialog id="lightbox" class="lightbox">
+    <button id="lightbox-close" class="lightbox-close" aria-label="Close">×</button>
+    <img id="lightbox-image" alt="">
+    <p id="lightbox-caption"></p>
+  </dialog>
+</body>
+</html>

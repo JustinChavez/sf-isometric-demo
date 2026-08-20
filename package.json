@@ -1,0 +1,7 @@
+{
+  "name": "sf-isometric-demo",
+  "private": true,
+  "scripts": {
+    "check": "node --check app.js"
+  }
+}
