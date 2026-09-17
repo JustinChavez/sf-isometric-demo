@@ -116,15 +116,10 @@ html, body {
 .map-hint    { left: 12px; bottom: 12px; color: var(--muted); }
 
 /* the only chrome that is a link, so it takes pointer events back */
-.map-socials {
+.map-credit {
   position: absolute;
   right: 12px; bottom: 12px;
   z-index: 3;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.map-social {
   display: inline-flex;
   align-items: center;
   font-size: 11.5px;
@@ -133,29 +128,23 @@ html, body {
   padding: 6px 12px;
   border-radius: 999px;
   background: var(--chip);
-  color: var(--chip-ink);
+  color: var(--muted);
   border: 1px solid var(--line);
   text-decoration: none;
   backdrop-filter: blur(6px);
-  transition: background .15s, border-color .15s;
+  transition: background .15s, border-color .15s, color .15s;
 }
-.map-social .dot {
-  display: inline-block;
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: #4e8a5e;
-  margin-right: 7px;
-}
-.map-social:hover {
+.map-credit:hover {
   background: rgba(30, 34, 40, .92);
   border-color: rgba(255, 255, 255, .32);
+  color: var(--chip-ink);
 }
 
 @media (max-width: 640px) {
   .map-hint { display: none; }
   .map-facts { display: none; }
   .map-readout { font-size: 10.5px; }
-  .map-social { font-size: 11px; padding: 5px 10px; }
+  .map-credit { font-size: 11px; padding: 5px 10px; }
 }
 
 /* --- quadrant lightbox ---------------------------------------------------- */
