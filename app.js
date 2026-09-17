@@ -217,6 +217,9 @@ function openLightbox(t) {
 
 viewport.addEventListener('pointerdown', (event) => {
   if (event.button !== 0) return;
+  // The zoom buttons and the social link live inside the viewport. Without this they
+  // would be swallowed by the drag handling below (preventDefault on pointerdown).
+  if (event.target.closest('a, button, dialog, input')) return;
   event.preventDefault();
   activePointerId = event.pointerId;
   dragStartX = event.clientX; dragStartY = event.clientY;
