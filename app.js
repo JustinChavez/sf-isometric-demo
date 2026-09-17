@@ -346,17 +346,25 @@ fetch('map/manifest.json')
     overviewEl.style.display = 'block';
     stage.appendChild(overviewEl);
 
-    fitMap(false);      // start zoomed out so the whole strip is visible at a glance
+    // Opening view, chosen by the owner: 16% framed on the Civic Center with City Hall
+    // sitting left of centre. Coordinates come from the tile grid (origin col 26, row 20,
+    // 512 px per step); City Hall itself is col 45.3, row 26.1, and the view centre is
+    // offset a little past it so the dome lands left of frame.
+    const HOME = { x: 11520, y: 3328, scale: 0.16 };
+    scale = Math.min(Math.max(HOME.scale, MIN_ABS_SCALE), MAX_SCALE);
+    offsetX = viewport.clientWidth / 2 - HOME.x * scale;
+    offsetY = viewport.clientHeight / 2 - HOME.y * scale;
+    applyTransform();
 
-    // deep link: #z=<scale>&c=<column> centres the view there, so a spot can be linked
-    // and, more usefully, a zoom state can be rendered for verification without a browser UI
-    const m = /z=([\d.]+)(?:&c=(\d+))?/.exec(location.hash);
+    // deep link: #z=<scale>&c=<column>&r=<row> centres the view there, so a framing can
+    // be linked, and a zoom state can be rendered headlessly for verification
+    const m = /z=([\d.]+)(?:&c=(\d+))?(?:&r=(\d+))?/.exec(location.hash);
     if (m) {
-      const z = Math.min(Math.max(parseFloat(m[1]), MIN_ABS_SCALE), MAX_SCALE);
-      scale = z;
-      const cx = m[2] !== undefined ? (Number(m[2]) - originX + 0.5) * QUAD : mapWidth / 2;
+      scale = Math.min(Math.max(parseFloat(m[1]), MIN_ABS_SCALE), MAX_SCALE);
+      const cx = m[2] !== undefined ? (Number(m[2]) - originX + 0.5) * QUAD : HOME.x;
+      const cy = m[3] !== undefined ? (Number(m[3]) - originY + 0.5) * QUAD : HOME.y;
       offsetX = viewport.clientWidth / 2 - cx * scale;
-      offsetY = (viewport.clientHeight - mapHeight * scale) / 2;
+      offsetY = viewport.clientHeight / 2 - cy * scale;
       applyTransform();
     }
   })
