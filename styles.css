@@ -51,17 +51,23 @@ html, body {
   width: 512px;
   height: 512px;
   display: block;
-  image-rendering: pixelated;
+  /* Below 100% the pieces are being DOWNSCALED, where nearest-neighbour drops pixels and
+     aliases badly; smooth resampling is correct there. Above 100% they are magnified and
+     nearest-neighbour is what keeps the pixel art crisp. .magnified is set by the viewer. */
+  image-rendering: auto;
+  z-index: 1;                     /* ABOVE the overview: a crisp piece always wins */
   pointer-events: none;           /* hit-testing happens against the grid in JS */
   user-select: none;
   -webkit-user-drag: none;
-  background: #14161a;            /* placeholder until the piece arrives */
+  background: transparent;
 }
+.map-stage.magnified .quadrant { image-rendering: pixelated; }
 
 .map-stage .overview {
   position: absolute;
   top: 0; left: 0;
   display: block;
+  z-index: 0;                     /* BASE layer: full-res pieces paint over it */
   pointer-events: none;
   user-select: none;
   -webkit-user-drag: none;

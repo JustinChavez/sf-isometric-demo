@@ -51,6 +51,8 @@ function clampOffsets() {
 function applyTransform() {
   clampOffsets();
   stage.style.transform = `translate(${offsetX}px, ${offsetY}px) scale(${scale})`;
+  // nearest-neighbour only helps when magnifying; see styles.css
+  stage.classList.toggle('magnified', scale >= 1);
   syncTiles();
   updateReadout();
 }
@@ -159,6 +161,18 @@ function fitMap(animate = false) {
   if (animate) animateTransform(); else applyTransform();
 }
 
+// The strip is 9.45:1 and a window is ~1.7:1, so "fit everything" shrinks it to a ribbon
+// occupying a fifth of the height - which reads as a blurry thumbnail. Filling the height
+// instead shows the full 2.4 km width at ~5x the zoom, and panning covers the length.
+function fitHeight(animate = false) {
+  if (!mapWidth || !mapHeight) return;
+  scale = Math.min(Math.max(viewport.clientHeight / mapHeight, MIN_ABS_SCALE), MAX_SCALE);
+  offsetX = Math.min(0, Math.max(viewport.clientWidth - mapWidth * scale,
+                                 -((mapWidth * scale - viewport.clientWidth) / 2)));
+  offsetY = (viewport.clientHeight - mapHeight * scale) / 2;
+  if (animate) animateTransform(); else applyTransform();
+}
+
 function zoomAt(factor, ax, ay) {
   if (ax === undefined) { ax = viewport.clientWidth / 2; ay = viewport.clientHeight / 2; }
   const prev = scale;
@@ -252,7 +266,7 @@ document.querySelectorAll('[data-map-action]').forEach((button) => {
     const action = button.dataset.mapAction;
     if (action === 'in') zoomAt(1.5);
     else if (action === 'out') zoomAt(1 / 1.5);
-    else if (action === 'width') zoomToFitWidth();
+    else if (action === 'fill') fitHeight(true);
     else fitMap(true);
   });
 });
@@ -260,6 +274,7 @@ document.querySelectorAll('[data-map-action]').forEach((button) => {
 document.addEventListener('keydown', (event) => {
   if (event.key === '+' || event.key === '=') zoomAt(1.4);
   else if (event.key === '-' || event.key === '_') zoomAt(1 / 1.4);
+  else if (event.key === 'f' || event.key === 'F') fitHeight(true);
   else if (event.key === '0') fitMap(true);
   else if (event.key === 'Escape' && lightbox.open) lightbox.close();
 });
@@ -331,7 +346,19 @@ fetch('map/manifest.json')
     overviewEl.style.display = 'block';
     stage.appendChild(overviewEl);
 
-    fitMap(false);
+    fitMap(false);      // start zoomed out so the whole strip is visible at a glance
+
+    // deep link: #z=<scale>&c=<column> centres the view there, so a spot can be linked
+    // and, more usefully, a zoom state can be rendered for verification without a browser UI
+    const m = /z=([\d.]+)(?:&c=(\d+))?/.exec(location.hash);
+    if (m) {
+      const z = Math.min(Math.max(parseFloat(m[1]), MIN_ABS_SCALE), MAX_SCALE);
+      scale = z;
+      const cx = m[2] !== undefined ? (Number(m[2]) - originX + 0.5) * QUAD : mapWidth / 2;
+      offsetX = viewport.clientWidth / 2 - cx * scale;
+      offsetY = (viewport.clientHeight - mapHeight * scale) / 2;
+      applyTransform();
+    }
   })
   .catch((error) => {
     if (readout) readout.textContent = `could not load the map (${error.message})`;
